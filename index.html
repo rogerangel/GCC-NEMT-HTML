@@ -8,12 +8,17 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
     />
+    <script
+      id="search-js"
+      defer
+      src="https://api.mapbox.com/search-js/v1.0.0-beta.16/web.js"
+    ></script>
     <link rel="stylesheet" href="style.css" />
     <title>GCC NEMT Request</title>
   </head>
   <body>
     <div class="container">
-      <div class="pt-3 text-center">
+      <div class="pt-3 text-center" id="header">
         <img
           id="gcc-icon"
           src="./Assets/Images/Gcc-logo.JPG"
@@ -22,171 +27,379 @@
         />
         <h2>Non-Emergency Medical Transportation Request</h2>
       </div>
-      <form class="row g-3 pt-3">
+      <form id="nemt-req" class="row g-3 pt-3 pb-5">
         <div class="card">
           <div class="card-body">
             <div class="row g-3">
               <div class="col-md-4">
                 <label for="f_name" class="form-label">First Name</label>
-                <input type="text" class="form-control" id="f_name" required />
+                <input
+                  name="first_name"
+                  type="text"
+                  class="form-control"
+                  id="f_name"
+                  pattern="\D+"
+                  required
+                />
               </div>
-              <div class="col-md-4">
+              <div class="col-md-3">
                 <label for="m_name" class="form-label">Middle Name</label>
-                <input type="text" class="form-control" id="m_name" required />
+                <input
+                  name="middle_name"
+                  type="text"
+                  class="form-control"
+                  id="m_name"
+                  pattern="\D+"
+                  required
+                />
               </div>
               <div class="col-md-4">
                 <label for="l_name" class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="l_name" required />
+                <input
+                  name="last_name"
+                  type="text"
+                  class="form-control"
+                  id="l_name"
+                  pattern="\D+"
+                  required
+                />
               </div>
-              <div class="col-md-6">
+              <div class="col-md-2">
+                <label for="dob" class="form-label">Date of Birth</label>
+                <input
+                  name="dob"
+                  type="date"
+                  class="form-control"
+                  id="dob"
+                  pattern="\d{1,2}\/\d{1,2}\/(?:\d{2}|\d{4})"
+                  required
+                />
+              </div>
+              <!-- <div class="col-md-1"></div> -->
+              <div class="col-md-4">
+                <label for="cin" class="form-label">Medicaid ID</label>
+                <input
+                  name="cin"
+                  type="text"
+                  class="form-control"
+                  id="cin"
+                  pattern="[A-z]{2}\d{5}[A-z]{1}"
+                  required
+                />
+              </div>
+              <div class="col-md-6"></div>
+              <div class="col-md-4">
                 <label for="primary_contact" class="form-label"
                   >Primary Contact #</label
                 >
                 <input
+                  name="primary_contact"
                   type="text"
-                  class="form-control"
+                  class="form-control phoneNum"
                   id="primary_contact"
+                  placeholder="e.g. (718) 123-4567"
+                  maxlength="16"
                   required
                 />
               </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <label for="second_contact" class="form-label"
                   >Secondary Contact #</label
                 >
                 <input
+                  name="secondary_contact"
                   type="text"
-                  class="form-control"
+                  class="form-control phoneNum"
                   id="second_contact"
+                  maxlength="16"
                   required
                 />
               </div>
-              <div class="col-md-6">
-                <label for="dob" class="form-label">Date of Birth</label>
-                <input type="text" class="form-control" id="dob" required />
-              </div>
-              <div class="col-md-6">
-                <label for="cin" class="form-label">Medicaid ID</label>
-                <input type="text" class="form-control" id="cin" required />
-              </div>
             </div>
           </div>
         </div>
         <div class="card">
           <div class="card-body">
             <div class="row g-3">
-              <div class="col-md-6">
-                <label for="apt_d" class="form-label">Appointment Date</label>
-                <input type="text" class="form-control" id="apt_d" required />
+              <div class="col-md-2">
+                <label for="appt_d" class="form-label">Appointment Date</label>
+                <input
+                  name="appt_date"
+                  type="date"
+                  class="form-control"
+                  id="appt_d"
+                  required
+                />
               </div>
-              <div class="col-md-6">
-                <label for="apt_t" class="form-label">Appointment Time</label>
-                <input type="text" class="form-control" id="apt_t" required />
+              <div class="col-md-2"></div>
+              <div class="col-md-4">
+                <div class="form-check form-switch mt-4">
+                  <input
+                    name="generated_PU_Time"
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="gen-pu"
+                    checked
+                  />
+                  <label class="form-check-label" for="flexSwitchCheckChecked"
+                    >Auto generate Pick Up Time</label
+                  >
+                </div>
+              </div>
+              <div class="col-md-2">
+                <label for="pu_t" class="form-label">Pick Up Time</label>
+                <select
+                  name="pickup_time"
+                  class="form-select op-time"
+                  id="pu_t"
+                  disabled
+                >
+                  <option selected hidden disabled></option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <label for="appt_t" class="form-label">Appointment Time</label>
+                <select
+                  name="appointment_time"
+                  class="form-select op-time"
+                  id="appt_t"
+                  required
+                >
+                  <option selected hidden disabled></option>
+                </select>
               </div>
             </div>
           </div>
         </div>
+        <!-- trip details -->
         <div class="card">
           <div class="card-body">
-            <div class="row g-3">
-              <!-- pu address -->
-              <div class="col-12">
-                <label for="inputAddress" class="form-label">Address</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="inputAddress"
-                  placeholder="1234 Main St"
-                />
+            <h5 class="card-title">Trip Details</h5>
+          </div>
+          <ul class="list-group list-group-flush">
+            <!-- pu address -->
+            <li class="list-group-item pb-3">
+              <h6 class="card-subtitle mb-2 pt-2 pb-2 text-body-secondary">
+                Pick Up Information
+              </h6>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="pu_Address" class="form-label">Address</label>
+                  <input
+                    name="pu-address"
+                    type="text"
+                    class="form-control"
+                    id="pu_Address"
+                    placeholder="e.g. 1234 Main St"
+                    autocomplete="pu address-line1"
+                  />
+                </div>
+                <div class="col-12">
+                  <label for="pu_Address2" class="form-label">Address 2</label>
+                  <input
+                    name="pu-address-ln2"
+                    type="text"
+                    class="form-control"
+                    id="pu_Address2"
+                    placeholder="e.g. floor 1 etc."
+                    autocomplete="pu address-line2"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label for="pu_City" class="form-label">City</label>
+                  <input
+                    name="pu-city"
+                    type="text"
+                    class="form-control"
+                    id="pu_City"
+                    autocomplete="pu address-level2"
+                  />
+                </div>
+                <div class="col-md-2">
+                  <label for="pu_State" class="form-label">State</label>
+                  <input
+                    name="pu-state"
+                    id="pu_State"
+                    class="form-control"
+                    autocomplete="pu address-level1"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <label for="pu_Zip" class="form-label">Zip</label>
+                  <input
+                    name="pu-zip"
+                    type="text"
+                    class="form-control"
+                    id="pu_Zip"
+                    autocomplete="pu postal-code"
+                  />
+                </div>
               </div>
-              <div class="col-12">
-                <label for="inputAddress2" class="form-label">Address 2</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="inputAddress2"
-                  placeholder="Apartment, studio, or floor"
-                />
+            </li>
+            <!-- pu end -->
+            <li class="list-group-item pb-3">
+              <div class="d-grid gap-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  id="addtl_stop"
+                >
+                  Add Additional Stops
+                </button>
               </div>
-              <div class="col-md-6">
-                <label for="inputCity" class="form-label">City</label>
-                <input type="text" class="form-control" id="inputCity" />
+            </li>
+            <!-- do address -->
+            <li class="list-group-item pb-3">
+              <h6 class="card-subtitle mb-2 pt-2 pb-2 text-body-secondary">
+                Drop Off Information
+              </h6>
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="do_Address" class="form-label">Address</label>
+                  <input
+                    name="do-address"
+                    type="text"
+                    class="form-control"
+                    id="do_Address"
+                    placeholder="e.g. 1234 Main St"
+                    autocomplete="pu address-line1"
+                  />
+                </div>
+                <div class="col-12">
+                  <label for="do_Address2" class="form-label">Address 2</label>
+                  <input
+                    name="do-address-ln2"
+                    type="text"
+                    class="form-control"
+                    id="do_Address2"
+                    placeholder="e.g. floor 1 etc."
+                    autocomplete="pu address-line2"
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label for="do_City" class="form-label">City</label>
+                  <input
+                    name="do-city"
+                    type="text"
+                    class="form-control"
+                    id="do_City"
+                    autocomplete="pu address-level2"
+                  />
+                </div>
+                <div class="col-md-2">
+                  <label for="do_State" class="form-label">State</label>
+                  <input
+                    name="do-state"
+                    id="do_State"
+                    class="form-control"
+                    autocomplete="pu address-level1"
+                  />
+                </div>
+                <div class="col-md-3">
+                  <label for="do_Zip" class="form-label">Zip</label>
+                  <input
+                    name="do-zip"
+                    type="text"
+                    class="form-control"
+                    id="do_Zip"
+                    autocomplete="pu postal-code"
+                  />
+                </div>
               </div>
-              <div class="col-md-4">
-                <label for="inputState" class="form-label">State</label>
-                <select id="inputState" class="form-select">
-                  <option selected>Choose...</option>
-                  <option>...</option>
-                </select>
-              </div>
-              <div class="col-md-2">
-                <label for="inputZip" class="form-label">Zip</label>
-                <input type="text" class="form-control" id="inputZip" />
-              </div>
-              <!-- do address -->
-              <div class="col-12">
-                <label for="inputAddress" class="form-label">Address</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="inputAddress"
-                  placeholder="1234 Main St"
-                />
-              </div>
-              <div class="col-12">
-                <label for="inputAddress2" class="form-label">Address 2</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="inputAddress2"
-                  placeholder="Apartment, studio, or floor"
-                />
-              </div>
-              <div class="col-md-6">
-                <label for="inputCity" class="form-label">City</label>
-                <input type="text" class="form-control" id="inputCity" />
-              </div>
-              <div class="col-md-4">
-                <label for="inputState" class="form-label">State</label>
-                <select id="inputState" class="form-select">
-                  <option selected>Choose...</option>
-                  <option>...</option>
-                </select>
-              </div>
-              <div class="col-md-2">
-                <label for="inputZip" class="form-label">Zip</label>
-                <input type="text" class="form-control" id="inputZip" />
-              </div>
+            </li>
+            <!-- do end -->
+          </ul>
+          <div class="card-body">
+            <div class="form-check form-switch">
+              <input
+                name="round_trip"
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="rt"
+                checked
+              />
+              <label class="form-check-label" for="flexSwitchCheckDefault"
+                >Round Trip
+              </label>
+              <span class="text-secondary"
+                ><i>(will <strong>not</strong> include addtl stops)</i></span
+              >
+            </div>
+            <div class="form-floating col-md-3 pt-2 pb-2 rt">
+              <select name="return_time" class="form-select op-time" id="rt_t">
+                <option selected>Will Call</option>
+              </select>
+              <label for="rt_t">Return Time</label>
+            </div>
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="si"
+              />
+              <label class="form-check-label" for="flexSwitchCheckDefault"
+                >Special Instructions</label
+              >
             </div>
           </div>
         </div>
+        <!-- trip details end -->
         <div class="card">
           <div class="card-body">
             <div class="row g-3">
               <div class="col-md-6">
                 <label for="doc_name" class="form-label">Doctor's Name</label>
-                <input type="text" class="form-control" id="doc_name" />
+                <input
+                  type="text"
+                  name="doctor_name"
+                  class="form-control"
+                  id="doc_name"
+                />
               </div>
               <div class="col-md-6">
                 <label for="npi" class="form-label">NPI #</label>
-                <input type="text" class="form-control" id="npi" />
+                <input type="text" name="npi" class="form-control" id="npi" />
               </div>
               <div class="col-md-12">
                 <label for="med_email" class="form-label"
                   >Medical Facility Email</label
                 >
-                <input type="text" class="form-control" id="med_email" />
+                <input
+                  type="text"
+                  name="facility_email"
+                  class="form-control"
+                  id="med_email"
+                />
               </div>
             </div>
           </div>
         </div>
         <div class="col-12"></div>
         <div class="col-12">
-          <button type="submit" class="btn btn-primary">
-            Request Transportation
-          </button>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary" type="button">
+              Request Transportation
+            </button>
+            <button class="btn btn-outline-danger" type="button">
+              Cancel Request
+            </button>
+          </div>
         </div>
       </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="index.js"></script>
+    <script>
+      const addtlStopClose = (e, int) => {
+        const closeBtnEl = document.querySelector(`#${e}`);
+        const parent =
+          closeBtnEl.parentElement.parentNode.parentElement.children[int];
+        parent.remove();
+      };
+    </script>
   </body>
 </html>
